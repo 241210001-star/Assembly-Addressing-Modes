@@ -2,7 +2,6 @@
 
 This repository demonstrates **all 9 common assembly addressing modes** using an example program written in **C** and its corresponding **assembly implementation**.
 
-> Repo language stats show 100% C, but the project includes/assumes an accompanying assembly source file (often stored as `.s` / `.asm`) that implements the same behavior as the C program while showcasing the addressing modes.
 
 ---
 
