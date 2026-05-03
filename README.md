@@ -16,7 +16,7 @@ The goal is to show how a single (small) C program can be translated into assemb
 4. **Register indirect addressing**
 5. **Indexed addressing**
 6. **Base + displacement (base-relative) addressing**
-7. **Scaled indexed addressing**
+7. **Auto-increment / Auto-decrement addressing**
 8. **PC-relative addressing**
 9. **Implied (implicit) addressing**
 
@@ -154,19 +154,23 @@ The C program uses local variables, which reside at fixed offsets from the stack
 
 ---
 
-## 7) Scaled Indexed Addressing
+## 7) Auto-increment / Auto-decrement Addressing
 
-**Meaning:** Effective address is base + (index * scale) + displacement.
+**Meaning:** Memory is accessed through a register pointer, and then the pointer register is automatically adjusted (incremented or decremented).
 
 **Where it appears:**
 
-- Accessing arrays of 4-byte or 8-byte elements (e.g., `int arr[i]`)
+- Iterating through an array via a pointer (`p++`, `p--`)
+- Walking through a buffer in a loop
+- Stack-like traversal patterns (ISA-dependent)
 
-**Typical assembly example (x86):**
+**Typical assembly examples:**
 
-- `mov eax, [rbx + rcx*4]`
+- ARM (post-index / pre-index forms):
+  - `ldr r0, [r1], #4` (load then increment pointer)
+  - `str r0, [r1, #-4]!` (decrement pointer then store)
 
-Many architectures implement scaling implicitly via shifts/adds; others (like x86) encode scaling directly. In the assembly, array indexing is implemented in a way that makes the element-size scaling visible.
+On ISAs that do not have explicit auto-inc/dec addressing, the same idea appears as a register-indirect load/store followed by an add/sub on the pointer register.
 
 ---
 
@@ -248,7 +252,7 @@ When reading the assembly file, search for:
 - Loads/stores like `[reg]` / `0(reg)` → **Register indirect**
 - Address expressions like `base + index` → **Indexed**
 - Stack accesses like `[fp + const]` → **Base + displacement**
-- Array access using `index*4` (or shifts) → **Scaled indexed**
+- Pointer-walk patterns like load/store with post/pre update (or load/store then add/sub) → **Auto-inc/dec**
 - Branches/jumps/calls to labels → **PC-relative**
 - `ret`, `push/pop`, flag-setting ops → **Implied**
 
